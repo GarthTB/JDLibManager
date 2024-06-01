@@ -257,18 +257,17 @@ namespace JDLibManager
         private void TBLibLoc_TextChanged(object sender, TextChangedEventArgs e)//每次词库载入成功
         {
             BacOut = false;//需要重新备份
-            if (CBDntLog.IsChecked == false && !LogOut && TBLog.Text.Length > 0)
+            if (CBDntLog.IsChecked == false && !LogOut && TBLog.Text.Length > 0//如果存在未导出的日志
+                && MessageBox.Show("有日志未导出，是否要直接清空？",
+                                   "提示",
+                                   MessageBoxButton.YesNo,
+                                   MessageBoxImage.Question) == MessageBoxResult.No//如果选择了不要直接清空
+                && !TryLogCor(SetLogLoc()))//但最后还是导出失败了
             {
-                if (MessageBox.Show("有日志未导出，是否要直接清空？", "提示", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-                {
-                    if (!TryLogCor(SetLogLoc()))//需要导出，但导出失败了
-                    {
-                        _ = MessageBox.Show("导出失败，日志将直接清空。",
-                                            "提示",
-                                            MessageBoxButton.OK,
-                                            MessageBoxImage.Error);
-                    }
-                }
+                _ = MessageBox.Show("导出失败，日志将直接清空。",
+                                    "提示",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
             }
             TBLog.Clear();//清空日志
 
@@ -575,9 +574,25 @@ namespace JDLibManager
             };
         }
 
-        private IEnumerable<string> TryGetAllCod(string ProWrd)//接收一个待删除的词组，返回词库中现有的所有码
+        private IEnumerable<string> TryGetAllCod(string ProWrd)//接收一个词组，返回词库中现有的所有码
         {
             return DicWrd.Where(onecode => onecode.Value.Contains(ProWrd)).Select(onecode => onecode.Key);
+        }
+
+        private string GetLngthnCod(string ProWrd, string ShoCod)//将输入的词组加长，返回最优的编码
+        {
+            List<string> LngthnCod = GetAllFulCod(ProWrd).Where(x => x.StartsWith(ShoCod))
+                                                         .ToList();
+            if (LngthnCod.Count != 1)
+                return string.Empty;
+
+            for (int i = ShoCod.Length + 1; i < 6; i++)
+            {
+                if (!HavCod(LngthnCod[0][..i]))
+                    return LngthnCod[0][..i];
+            }
+
+            return LngthnCod[0];
         }
 
         private bool WrdCodMch(string ProWrd, string ProCod)//检查词和码是否匹配
@@ -628,18 +643,21 @@ namespace JDLibManager
                 using StreamWriter StrWriWrd = new(WrdLoc, false);//覆写
                 foreach (string hed in LstHed)
                     StrWriWrd.WriteLine(hed);//写入文件头
-                foreach (var itm in DicWrd)
+                foreach (var (cod, wrds) in DicWrd)
                 {
-                    foreach (string wrd in itm.Value)
+                    foreach (string wrd in wrds)
                     {
-                        StrWriWrd.WriteLine(wrd + '\t' + itm.Key);//写入词库
+                        StrWriWrd.WriteLine(wrd + '\t' + cod);//写入词库
                     }
                 }
                 return true;
             }
             catch (Exception ex)
             {
-                _ = MessageBox.Show("写入词库出错: " + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ = MessageBox.Show("写入词库出错: " + ex.Message,
+                                    "错误",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
                 return false;
             }
         }
@@ -669,6 +687,18 @@ namespace JDLibManager
                     }
                     break;
                 case 3:
+                    if (CBIgnExc.IsChecked == true)//记录不带风险信息的日志
+                    {
+                        TBLog.Text += $"\t{CBExcCodLon.Text}\t{Pag}\t忽略风险\r\n";
+                        TBLog.Text += $"{TBExcWrdLon.Text}\t{CBExcCodSho.Text}\t{Pag}\t\r\n";
+                        TBLog.Text += $"{TBExcWrdSho.Text}\t{LngthnCod}\t{Pag}\t\r\n";
+                    }
+                    else//记录带风险信息的日志
+                    {
+                        TBLog.Text += $"\t{CBExcCodLon.Text}\t{Pag}\t{GetRskInf(Pag)}\r\n";
+                        TBLog.Text += $"{TBExcWrdLon.Text}\t{CBExcCodSho.Text}\t{Pag}\t\r\n";
+                        TBLog.Text += $"{TBExcWrdSho.Text}\t{LngthnCod}\t{Pag}\t\r\n";
+                    }
                     break;
                 case 4:
                     break;
@@ -682,8 +712,8 @@ namespace JDLibManager
             {
                 { 1, new List<CheckBox> { WarAddWFZ, WarAddCZG, WarAddGDK, WarAddMWB, WarAddDMK, WarAddMBP } },
                 { 2, new List<CheckBox> { WarDelDMK, WarDelSHL } },
-                { 3, new List<CheckBox> { WarExcDMK, WarExcMWB, WarExcYDD, WarExcTHL } },
-                { 4, new List<CheckBox> { WarEdiGHL, WarEdiMWB, WarEdiRYC, WarEdiGDK, WarEdiMBP } }
+                { 3, new List<CheckBox> { WarExcMWB, WarExcDMK, WarExcTHL } },
+                { 4, new List<CheckBox> { WarEdiGDK, WarEdiMWB, WarEdiRYC, WarEdiGHL, WarEdiMBP } }
             };
             if (AllWarCBs.TryGetValue(Pag, out List<CheckBox>? WarCBs))//某页上的风险提示
             {
@@ -702,12 +732,9 @@ namespace JDLibManager
         private string AddProWrd = string.Empty;//暂时存储Add页面的输入的词
         private string AddProCod = string.Empty;//暂时存储Add页面的输入的码
         private HashSet<string> AllFulCod = new();//词的所有全码（未排序）
-        private readonly DispatcherTimer TmrAddCod = new()//每0.4秒检查一次手动编码
-        {
-            Interval = TimeSpan.FromSeconds(0.4)
-        };
+        private readonly DispatcherTimer TmrAddCod = new() { Interval = TimeSpan.FromSeconds(0.4) };
 
-        private void AddStaSwt()//根据待添加词和码的状态启用或禁用控件
+        private void ChkRskAdd()//检查风险
         {
             ButAdd.IsEnabled = false;
 
@@ -753,12 +780,12 @@ namespace JDLibManager
             {
                 WarAddWFZ.IsChecked = true;
             }
-            AddStaSwt();
+            ChkRskAdd();
         }
 
         private void CBAddCod_SelectionChanged(object sender, SelectionChangedEventArgs e)//选择了一个自动编码
         {
-            AddStaSwt();
+            ChkRskAdd();
         }
 
         private void SliAddCodLen_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)//选择了一个码长
@@ -769,7 +796,7 @@ namespace JDLibManager
             CBAddCod.ItemsSource = AllFulCod.Select(x => x[..CodLen])//按码长截取
                                             .OrderBy(x => x);//排序
             CBAddCod.SelectedIndex = 0;//自动选中第一个
-            AddStaSwt();
+            ChkRskAdd();
         }
 
         private void ChkManAddCod(object? sender, EventArgs e)//检查手动输入的编码
@@ -805,7 +832,7 @@ namespace JDLibManager
                     ManCoding = true;
                     WarAddMBP.IsChecked = false;
                 }
-                AddStaSwt();
+                ChkRskAdd();
             }
         }
 
@@ -830,7 +857,7 @@ namespace JDLibManager
 
         private void CBIgnAdd_Unchecked(object sender, RoutedEventArgs e)//不忽略风险
         {
-            AddStaSwt();
+            ChkRskAdd();
         }
 
         private void ButAdd_Click(object sender, RoutedEventArgs e)//加词
@@ -854,34 +881,40 @@ namespace JDLibManager
 
         //Del页的操作
 
-        private HashSet<string> AllCodRem = new();//词库里现有的所有码
+        private HashSet<string> AllCodDel = new();//词库里现有的所有码
 
-        private void DelStaSwt()//根据待删的词的状态启用或禁用控件
+        private void ChkRskDel()//检查风险
         {
-            switch (AllCodRem.Count)
+            LBDelAlr.Visibility = Visibility.Hidden;
+            if (TBDelWrd.Text.Length == 0 || CBDelCod.Text.Length == 0)//没有目标，则不允许操作
+            {
+                ButDel.IsEnabled = false;
+                return;
+            }
+            if (CBIgnDel.IsChecked == false)//不忽略风险，则执行检查
+            {
+                WarDelDMK.IsChecked = AllCodDel.Count > 1;//多码可选
+                WarDelSHL.IsChecked = HavLonCod(CBDelCod.Text);//删后留空
+            }
+            ButDel.IsEnabled = true;
+        }
+
+        private void ReloadCodDel()//往复选框中填放编码
+        {
+            switch (AllCodDel.Count)
             {
                 case 0:
                     LBDelAlr.Visibility = Visibility.Visible;
                     ButDel.IsEnabled = false;
                     return;
                 case 1:
-                    CBDelCod.ItemsSource = AllCodRem;
+                    CBDelCod.ItemsSource = AllCodDel;
                     break;
                 default:
-                    CBDelCod.ItemsSource = AllCodRem.OrderBy(x => x);
+                    CBDelCod.ItemsSource = AllCodDel.OrderBy(x => x);
                     break;
             }
-            if (CBDelCod.Text.Length == 0)
-            {
-                CBDelCod.SelectedIndex = 0;//自动选中第一个
-            }
-            if (CBIgnDel.IsChecked == false)//不忽略风险，则执行检查
-            {
-                WarDelDMK.IsChecked = AllCodRem.Count > 1;
-                WarDelSHL.IsChecked = HavLonCod(CBDelCod.Text);
-            }
-            LBDelAlr.Visibility = Visibility.Hidden;
-            ButDel.IsEnabled = true;
+            CBDelCod.SelectedIndex = 0;//自动选中第一个
         }
 
         private void TBDelWrd_TextChanged(object sender, TextChangedEventArgs e)//输入待删的词
@@ -892,13 +925,14 @@ namespace JDLibManager
                 ButDel.IsEnabled = false;
                 return;
             }
-            AllCodRem = TryGetAllCod(TBDelWrd.Text).ToHashSet();
-            DelStaSwt();
+            AllCodDel = TryGetAllCod(TBDelWrd.Text).ToHashSet();
+            ReloadCodDel();
+            ChkRskDel();
         }
 
         private void CBDelCod_SelectionChanged(object sender, SelectionChangedEventArgs e)//选择了一个已有的编码
         {
-            DelStaSwt();
+            ChkRskDel();
         }
 
         private void CBIgnDel_Checked(object sender, RoutedEventArgs e)//忽略风险
@@ -909,7 +943,7 @@ namespace JDLibManager
 
         private void CBIgnDel_Unchecked(object sender, RoutedEventArgs e)//不忽略风险
         {
-            DelStaSwt();
+            ChkRskDel();
         }
 
         private void DicWrdDel(string DelWrd, string DelCod)//在词组里删东西
@@ -927,12 +961,15 @@ namespace JDLibManager
                 return;
 
             //在现有列表中删掉选中的码
-            _ = AllCodRem.Remove(CBDelCod.Text);
+            _ = AllCodDel.Remove(CBDelCod.Text);
 
             //补位提示
             if (WarDelSHL.IsChecked == true)
             {
-                _ = MessageBox.Show("该码删除后会有空位，请到修改页面补位。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                _ = MessageBox.Show("该码删除后会有空位，请到修改页面补位。",
+                                    "提示",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Information);
             }
 
             //防止再次删除
@@ -946,5 +983,190 @@ namespace JDLibManager
         }
 
         //Exc页的操作
+
+        private HashSet<string> AllCodSho = new();//词库里现有的所有短码
+        private HashSet<string> AllCodLon = new();//词库里现有的所有长码
+        private string LngthnCod = string.Empty;//短码将要加长到的码
+
+        private void ChkRskExc()//检查风险
+        {
+            LBExcAlr.Visibility = Visibility.Hidden;
+            ButExc.IsEnabled = false;
+            if (TBExcWrdSho.Text.Length == 0
+                || CBExcCodSho.Text.Length == 0
+                || TBExcWrdLon.Text.Length == 0
+                || CBExcCodLon.Text.Length == 0
+                || TBExcWrdSho.Text == TBExcWrdLon.Text
+                || CBExcCodSho.Text.Length == CBExcCodLon.Text.Length)//没有目标或没有改动，则不允许操作
+            {
+                return;
+            }
+
+            if (!CBExcCodLon.Text.StartsWith(CBExcCodSho.Text))//如果两码无冲突
+            {
+                WarExcWCT.IsChecked = true;
+                return;
+            }
+            WarExcWCT.IsChecked = false;
+
+            LngthnCod = GetLngthnCod(TBExcWrdSho.Text, CBExcCodSho.Text);
+            if (LngthnCod.Length == 0)//如果短码加长后不唯一，则不允许操作
+            {
+                WarExcGZB.IsChecked = true;
+                return;
+            }
+            WarExcGZB.IsChecked = false;
+
+            if (CBIgnExc.IsChecked == false)//不忽略风险，则执行检查
+            {
+                WarExcMWB.IsChecked = HavCod(LngthnCod);//码位被占
+                WarExcDMK.IsChecked = CBExcCodSho.Items.Count > 1 || CBExcCodLon.Items.Count > 1;//多码可选
+                WarExcTHL.IsChecked = HavLonCod(CBExcCodLon.Text);//调后留空
+            }
+
+            ButExc.IsEnabled = true;
+        }
+
+        private void ReloadCodExcSho()//往复选框中填放短码
+        {
+            switch (AllCodSho.Count)
+            {
+                case 0:
+                    LBExcAlr.Visibility = Visibility.Visible;
+                    ButExc.IsEnabled = false;
+                    return;
+                case 1:
+                    CBExcCodSho.ItemsSource = AllCodSho;
+                    break;
+                default:
+                    CBExcCodSho.ItemsSource = AllCodSho.OrderBy(x => x);
+                    break;
+            }
+            CBExcCodSho.SelectedIndex = 0;//自动选中第一个
+        }
+
+        private void ReloadCodExcLon()//往复选框中填放长码
+        {
+            switch (AllCodLon.Count)
+            {
+                case 0:
+                    LBExcAlr.Visibility = Visibility.Visible;
+                    ButExc.IsEnabled = false;
+                    return;
+                case 1:
+                    CBExcCodLon.ItemsSource = AllCodLon;
+                    break;
+                default:
+                    CBExcCodLon.ItemsSource = AllCodLon.OrderBy(x => x);
+                    break;
+            }
+            CBExcCodLon.SelectedIndex = 0;//自动选中第一个
+        }
+
+        private void TBExcWrdSho_TextChanged(object sender, TextChangedEventArgs e)//输入短码的词
+        {
+            if (TBExcWrdSho.Text.Length == 0)//清空时
+            {
+                LBExcAlr.Visibility = Visibility.Hidden;
+                ButExc.IsEnabled = false;
+                return;
+            }
+            AllCodSho = TryGetAllCod(TBExcWrdSho.Text).ToHashSet();
+            ReloadCodExcSho();
+            ChkRskExc();
+        }
+
+        private void CBExcCodSho_SelectionChanged(object sender, SelectionChangedEventArgs e)//选择了一个对应的短码
+        {
+            ChkRskExc();
+        }
+
+        private void TBExcWrdLon_TextChanged(object sender, TextChangedEventArgs e)//输入长码的词
+        {
+            if (TBExcWrdLon.Text.Length == 0)//清空时
+            {
+                LBExcAlr.Visibility = Visibility.Hidden;
+                ButExc.IsEnabled = false;
+                return;
+            }
+            AllCodLon = TryGetAllCod(TBExcWrdLon.Text).ToHashSet();
+            ReloadCodExcLon();
+            ChkRskExc();
+        }
+
+        private void CBExcCodLon_SelectionChanged(object sender, SelectionChangedEventArgs e)//选择了一个对应的长码
+        {
+            ChkRskExc();
+        }
+
+        private void CBIgnExc_Checked(object sender, RoutedEventArgs e)//忽略风险
+        {
+            WarExcMWB.IsChecked = false;//码位被占
+            WarExcDMK.IsChecked = false;//多码可选
+            WarExcTHL.IsChecked = false;//调后留空
+        }
+
+        private void CBIgnExc_Unchecked(object sender, RoutedEventArgs e)//不忽略风险
+        {
+            ChkRskExc();
+        }
+
+        private void DicWrdExc()//进行交换的核心操作
+        {
+            //用长码词换掉短码词
+            for (int i = 0; i < DicWrd[CBExcCodSho.Text].Count; i++)
+            {
+                if (DicWrd[CBExcCodSho.Text][i] == TBExcWrdSho.Text)
+                {
+                    DicWrd[CBExcCodSho.Text][i] = TBExcWrdLon.Text;
+                    break;
+                }
+            }
+
+            //删掉原来的长码词
+            DicWrdDel(TBExcWrdLon.Text, CBExcCodLon.Text);
+
+            //把短码词加到加长码上
+            DicWrdAdd(TBExcWrdSho.Text, LngthnCod);
+        }
+
+        private void ButExc_Click(object sender, RoutedEventArgs e)//调换
+        {
+            //进行交换的核心操作
+            DicWrdExc();
+
+            //写入词库
+            if (!TryWriWrd())//失败，则直接返回
+                return;
+
+            //清除两个复选框
+            CBExcCodSho.Items.Clear();
+            CBExcCodLon.Items.Clear();
+
+            //补位提示
+            if (WarExcTHL.IsChecked == true)
+            {
+                _ = MessageBox.Show("调换后长码会有空位，请到修改页面补位。",
+                                    "提示",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Information);
+            }
+
+            //防止再次调换
+            LBExcAlr.Visibility = Visibility.Visible;
+            ButExc.IsEnabled = false;
+
+            //记录日志
+            if (CBDntLog.IsChecked == true)//禁用日志，则直接返回
+                return;
+            WriTabLog(3);
+        }
+
+        //Edi页的操作
+
+        private void SliEdiWrdCod_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+        }
     }
 }

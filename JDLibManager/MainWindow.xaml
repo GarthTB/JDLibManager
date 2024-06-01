@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JDLibManager"
         mc:Ignorable="d"
-        Title="键道6词库管理器" Icon="/键道.png" ResizeMode="CanMinimize" FontSize="14" SizeToContent="WidthAndHeight" Loaded="WinDowMai_Loaded" Closing="WinDowMai_Closing">
+        Title="键道6词库管理器" Icon="/JD.png" ResizeMode="CanMinimize" FontSize="14" SizeToContent="WidthAndHeight" Loaded="WinDowMai_Loaded" Closing="WinDowMai_Closing">
     <Grid>
         <TabControl x:Name="TabCon" SelectionChanged="TabCon_SelectionChanged">
             <TabItem x:Name="TabSet" Header="配置">
@@ -67,21 +67,22 @@
             <TabItem x:Name="TabExc" Header="调频">
                 <Grid Background="#FFF0F0F0">
                     <Label Content="短码的词" HorizontalAlignment="Left" Margin="12,12,0,0" VerticalAlignment="Top" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="72"/>
-                    <TextBox x:Name="TBExcWrdSho" Margin="98,16,12,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="62" VerticalScrollBarVisibility="Auto" Width="204"/>
+                    <TextBox x:Name="TBExcWrdSho" Margin="98,16,12,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="62" VerticalScrollBarVisibility="Auto" Width="204" TextChanged="TBExcWrdSho_TextChanged"/>
                     <Label Content="对应的码" HorizontalAlignment="Left" Margin="12,91,0,0" VerticalAlignment="Top" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="72"/>
-                    <ComboBox x:Name="CBExcCodSho" Margin="98,94,12,0" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="CBExcCodSho" Margin="98,94,12,0" VerticalAlignment="Top" SelectionChanged="CBExcCodSho_SelectionChanged"/>
                     <Label Content="长码的词" HorizontalAlignment="Left" Margin="12,132,0,0" VerticalAlignment="Top" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="72"/>
-                    <TextBox x:Name="TBExcWrdLon" Margin="98,136,12,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="62" VerticalScrollBarVisibility="Auto" Width="204"/>
+                    <TextBox x:Name="TBExcWrdLon" Margin="98,136,12,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="62" VerticalScrollBarVisibility="Auto" Width="204" TextChanged="TBExcWrdLon_TextChanged"/>
                     <Label Content="对应的码" HorizontalAlignment="Left" Margin="12,211,0,0" VerticalAlignment="Top" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="72"/>
-                    <ComboBox x:Name="CBExcCodLon" Margin="98,214,12,0" VerticalAlignment="Top"/>
+                    <ComboBox x:Name="CBExcCodLon" Margin="98,214,12,0" VerticalAlignment="Top" SelectionChanged="CBExcCodLon_SelectionChanged"/>
                     <Label Content="风险提示" HorizontalAlignment="Left" Margin="12,248,0,0" VerticalAlignment="Top" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="72"/>
-                    <CheckBox x:Name="WarExcYDD" Content="一短多长" HorizontalAlignment="Left" Margin="110,256,0,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsEnabled="False" IsChecked="False"/>
+                    <CheckBox x:Name="WarExcGZB" Content="各种不行" HorizontalAlignment="Left" Margin="110,256,0,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsEnabled="False" IsChecked="False"/>
                     <CheckBox x:Name="WarExcMWB" Content="码位被占" HorizontalAlignment="Left" Margin="212,256,0,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsEnabled="False" IsChecked="False"/>
+                    <CheckBox x:Name="WarExcWCT" Content="无冲突" HorizontalAlignment="Left" Margin="20,285,0,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsEnabled="False" IsChecked="False"/>
                     <CheckBox x:Name="WarExcDMK" Content="多码可选" HorizontalAlignment="Left" Margin="110,285,0,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsEnabled="False" IsChecked="False"/>
                     <CheckBox x:Name="WarExcTHL" Content="调后留空" HorizontalAlignment="Left" Margin="212,285,0,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" IsEnabled="False" IsChecked="False"/>
-                    <CheckBox x:Name="CBIgnExc" Content="忽略风险" HorizontalAlignment="Left" Margin="14,328,0,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                    <CheckBox x:Name="CBIgnExc" Content="忽略风险" HorizontalAlignment="Left" Margin="14,328,0,0" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Checked="CBIgnExc_Checked" Unchecked="CBIgnExc_Unchecked"/>
                     <Label x:Name="LBExcAlr" Content="×已调换" Margin="110,319,104,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Visibility="Hidden" Foreground="Red"/>
-                    <Button x:Name="ButExc" Content="调换" HorizontalAlignment="Left" Margin="232,317,0,14" Width="70" Background="#FFEEEEEE" Height="30" IsEnabled="False"/>
+                    <Button x:Name="ButExc" Content="调换" HorizontalAlignment="Left" Margin="232,317,0,14" Width="70" Background="#FFEEEEEE" Height="30" IsEnabled="False" Click="ButExc_Click"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="TabEdi" Header="修改">
@@ -90,7 +91,7 @@
                     <TextBox x:Name="TBEdiWrdBef" Margin="98,16,12,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="62" VerticalScrollBarVisibility="Auto" Width="204"/>
                     <Label Content="原有的码" HorizontalAlignment="Left" Margin="12,91,0,0" VerticalAlignment="Top" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="72"/>
                     <ComboBox x:Name="CBEdiCodBef" Margin="98,94,12,0" VerticalAlignment="Top"/>
-                    <Slider x:Name="SliEdiWrdCod" VerticalAlignment="Top" Maximum="1" Value="1" TickPlacement="Both" InputScope="Number" Ticks="0 1" IsSnapToTickEnabled="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="33,164,0,0" Orientation="Vertical" Height="50" HorizontalAlignment="Left" SelectionStart="0" SelectionEnd="1"/>
+                    <Slider x:Name="SliEdiWrdCod" VerticalAlignment="Top" Maximum="1" Value="1" TickPlacement="Both" InputScope="Number" Ticks="0 1" IsSnapToTickEnabled="True" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="33,161,0,0" Orientation="Vertical" Height="50" HorizontalAlignment="Left" SelectionStart="0" SelectionEnd="1" ValueChanged="SliEdiWrdCod_ValueChanged"/>
                     <Label Content="把词改为" HorizontalAlignment="Left" Margin="12,131,0,0" VerticalAlignment="Top" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="72"/>
                     <TextBox x:Name="TBEdiWrdAft" Margin="98,135,12,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="62" VerticalScrollBarVisibility="Auto" Width="204"/>
                     <Label Content="把码改为" HorizontalAlignment="Left" Margin="12,211,0,0" VerticalAlignment="Top" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="72"/>
