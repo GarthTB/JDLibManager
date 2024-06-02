@@ -728,8 +728,8 @@ namespace JDLibManager
 
         private void ButCod_Click(object sender, RoutedEventArgs e)//源码链接
         {
-            Clipboard.SetDataObject("https://github.com/GarthTB/CiQi2");
-            _ = MessageBox.Show("词器v2.0，一个用于维护Rime版星空键道6输入法的词库的Windows工具。\r\n已开源于Github，源码链接已复制到剪贴板。",
+            Clipboard.SetDataObject("https://github.com/GarthTB/JDLibManager");
+            _ = MessageBox.Show("词器v2.0，一个用于维护Rime星空键道6输入法词库的Windows工具。\r\n已开源于Github，源码链接已复制到剪贴板。",
                                 "词器",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
