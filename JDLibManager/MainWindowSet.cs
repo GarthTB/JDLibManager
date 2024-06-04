@@ -417,7 +417,7 @@ namespace JDLibManager
                                     MessageBoxImage.Warning);
                 return;
             }
-            LogOut = TryLogCor(TBLog.Text);
+            LogOut = TryLogCor(TBLogLoc.Text);
             LogStaSwt();//根据日志状态启用或禁用控件
         }
 

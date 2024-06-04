@@ -8,6 +8,10 @@
     <UseWPF>true</UseWPF>
     <DebugType>none</DebugType>
     <ApplicationIcon>JD.ico</ApplicationIcon>
+    <Authors>Garth</Authors>
+    <PackageIcon>JD.png</PackageIcon>
+    <FileVersion>2.0.1.0</FileVersion>
+    <Version>2.0.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,15 +23,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="JD.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="JD.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="JD.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="JD.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
