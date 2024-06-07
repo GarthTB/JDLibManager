@@ -10,7 +10,43 @@ namespace JDLibManager
     {
         private bool BacOut;//是否已备份成功，初始为否
         private bool LogOut;//是否已导出日志，初始为否
-        private const string MsgBoxLoaTip = "目录中的Rime键道词库。\r\n词库只载入一次，如有需要，请重新选择词库。\r\n所有修改都将覆写原词库，建议先备份再修改。";//提示性信息
+        private const string MsgBoxLoaTip = "目录中的Rime键道词库。\r\n词库只载入一次，如有需要，请重新选择词库。\r\n所有修改都将覆写原词库，且词频和注释会丢失。\r\n建议先备份再修改。";//提示性信息
+
+        private static bool RemoveCom(ref string line)//除去某行上的注释
+        {
+            if (line.StartsWith('#'))//整行都是注释
+            {
+                return false;
+            }
+            if (line.Contains('#'))//行中有注释
+            {
+                line = line[..line.IndexOf('#')];
+            }
+            return true;
+        }
+
+        private static bool LineValid(string[] SplSli)//判断某行是否为条目
+        {
+            return SplSli.Length == 2 || (SplSli.Length == 3 && int.TryParse(SplSli[2], out int _));
+        }
+
+        private void ReaLibErr()//读取词库出错
+        {
+            DicWrd.Clear();
+            DicDan.Clear();
+            LstHed.Clear();
+            _ = MessageBox.Show("词库加载出错！请检查词库中有无异常的行，然后重新选择。",
+                                "错误",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
+        }
+
+        private bool WordValid()//判断词组里是否每个编码的每个字符都有效
+        {
+            return !DicWrd.Keys.Any(onecod
+                => onecod.Any(oneele
+                => !AllEle.Contains(oneele)));
+        }
 
         private bool TryReaWrd()//试图读取词组
         {
@@ -24,8 +60,10 @@ namespace JDLibManager
                 using StreamReader StrReaWrd = new(WrdLoc);
                 while ((line = StrReaWrd.ReadLine()) != null)//读一行
                 {
+                    if (!RemoveCom(ref line))//除去注释
+                        continue;
                     SplSli = line.Split('\t');//把这行分割
-                    if (SplSli.Length == 2)//该行中有一个Tab，则载入并打断循环
+                    if (LineValid(SplSli))//该行是条目，则载入并打断循环
                     {
                         DicWrdAdd(SplSli[0], SplSli[1]);
                         break;
@@ -34,8 +72,10 @@ namespace JDLibManager
                 }
                 while ((line = StrReaWrd.ReadLine()) != null)//读一行
                 {
+                    if (!RemoveCom(ref line))//除去注释
+                        continue;
                     SplSli = line.Split('\t');//把这行分割
-                    if (SplSli.Length != 2)//格式不正确，则立即中止
+                    if (!LineValid(SplSli))//格式不正确，则立即中止
                     {
                         ReaLibErr();
                         return false;
@@ -53,17 +93,19 @@ namespace JDLibManager
             }
 
             //读取完成，读空或含有无效码报错
-            if (DicWrd.Count > 0 && WrdCodVal())
+            if (DicWrd.Count > 0 && WordValid())
                 return true;
             ReaLibErr();
             return false;
         }
 
-        private bool WrdCodVal()//判断词组里是否每个编码的每个字符都有效
+        private bool DanzValid()//判断单字里是否每个字的每个编码都符合条件
         {
-            return !DicWrd.Keys.Any(onecod
-                => onecod.Any(oneele
-                => !AllEle.Contains(oneele)));
+            return !DicDan.Values.Any(codcol
+                => codcol.Any(onecod
+                => !YinEle.Contains(onecod[0])
+                   || !YinEle.Contains(onecod[1])
+                   || !XngEle.Contains(onecod[2])));
         }
 
         private bool TryReaDan()//试图读取单字
@@ -77,8 +119,10 @@ namespace JDLibManager
                 using StreamReader StrReaDan = new(DanLoc);
                 while ((line = StrReaDan.ReadLine()) != null)//读一行
                 {
+                    if (!RemoveCom(ref line))//除去注释
+                        continue;
                     SplSli = line.Split('\t');//把这行分割
-                    if (SplSli.Length == 2 && SplSli[1].Length > 2)//该行中有一个Tab且大于2码，则载入并打断循环
+                    if (LineValid(SplSli) && SplSli[1].Length > 2)//该行是条目，且大于2码，则载入并打断循环
                     {
                         DicDanAdd(SplSli[0], SplSli[1]);
                         break;
@@ -86,8 +130,10 @@ namespace JDLibManager
                 }
                 while ((line = StrReaDan.ReadLine()) != null)//读一行
                 {
+                    if (!RemoveCom(ref line))//除去注释
+                        continue;
                     SplSli = line.Split('\t');//把这行分割
-                    if (SplSli.Length != 2)//格式不正确，则立即中止
+                    if (!LineValid(SplSli))//格式不正确，则立即中止
                     {
                         ReaLibErr();
                         return false;
@@ -108,30 +154,10 @@ namespace JDLibManager
             }
 
             //读取完成，读空或含有无效码报错
-            if (DicDan.Count > 0 && DanCodVal())
+            if (DicDan.Count > 0 && DanzValid())
                 return true;
             ReaLibErr();
             return false;
-        }
-
-        private bool DanCodVal()//判断单字里是否每个字的每个编码都符合条件
-        {
-            return !DicDan.Values.Any(codcol
-                => codcol.Any(onecod
-                => !YinEle.Contains(onecod[0])
-                   || !YinEle.Contains(onecod[1])
-                   || !XngEle.Contains(onecod[2])));
-        }
-
-        private void ReaLibErr()//读取词库出错
-        {
-            DicWrd.Clear();
-            DicDan.Clear();
-            LstHed.Clear();
-            _ = MessageBox.Show("词库加载出错！请检查词库中有无异常的行，然后重新选择。",
-                                "错误",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Error);
         }
 
         private bool TryLoaLib()//试图载入词组和单字
