@@ -49,9 +49,12 @@ namespace JDLibManager
 
             if (CBIgnExc.IsChecked == false)//不忽略风险，则执行检查
             {
-                if (LngthnCod != CBExcCodLon.Text) WarExcMWB.IsChecked = HavCod(LngthnCod);//码位被占
+                if (LngthnCod != CBExcCodLon.Text)
+                {
+                    WarExcMWB.IsChecked = HavCod(LngthnCod);//码位被占
+                    WarExcTHL.IsChecked = HavLonCod(CBExcCodLon.Text);//调后留空
+                }
                 WarExcDMK.IsChecked = CBExcCodSho.Items.Count > 1 || CBExcCodLon.Items.Count > 1;//多码可选
-                WarExcTHL.IsChecked = HavLonCod(CBExcCodLon.Text);//调后留空
             }
 
             ButExc.IsEnabled = true;

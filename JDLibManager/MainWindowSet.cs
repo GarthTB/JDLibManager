@@ -36,9 +36,9 @@ namespace JDLibManager
             DicDan.Clear();
             LstHed.Clear();
             MessageBox.Show("词库加载出错！请检查词库中有无异常的行，然后重新选择。",
-                                "错误",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Error);
+                            "错误",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Error);
         }
 
         private bool WordValid()//判断词组里是否每个编码的每个字符都有效
@@ -86,9 +86,9 @@ namespace JDLibManager
             catch (Exception ex)
             {
                 MessageBox.Show($"读取词组出错: {ex.Message}",
-                                    "错误",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Error);
+                                "错误",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
                 return false;
             }
 
@@ -147,9 +147,9 @@ namespace JDLibManager
             catch (Exception ex)
             {
                 MessageBox.Show($"读取单字出错: {ex.Message}",
-                                    "错误",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Error);
+                                "错误",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
                 return false;
             }
 
@@ -177,9 +177,9 @@ namespace JDLibManager
             if (TryLoaLib())
             {
                 MessageBox.Show($"已自动载入程序上级{MsgBoxLoaTip}",
-                                    "提示",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Information);
+                                "提示",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
                 TBLibLoc.Text = Path.GetDirectoryName(WrdLoc);
                 return;
             }
@@ -190,18 +190,18 @@ namespace JDLibManager
             if (TryLoaLib())
             {
                 MessageBox.Show($"已自动载入Rime默认{MsgBoxLoaTip}",
-                                    "提示",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Information);
+                                "提示",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
                 TBLibLoc.Text = Path.GetDirectoryName(WrdLoc);
                 return;
             }
 
             //都没有
             MessageBox.Show("未能自动载入Rime键道词库。\r\n建议将此程序放在词库的下级目录中，或手动选择词库位置。",
-                                "提示",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Warning);
+                            "提示",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
         }
 
         private static string SetLibLoc()//选择词库位置
@@ -227,9 +227,9 @@ namespace JDLibManager
                 if (TryLoaLib())
                 {
                     MessageBox.Show($"已成功载入指定{MsgBoxLoaTip}",
-                                        "提示",
-                                        MessageBoxButton.OK,
-                                        MessageBoxImage.Information);
+                                    "提示",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Information);
                     TBLibLoc.Text = LibLoc;
                 }
             }
@@ -246,9 +246,9 @@ namespace JDLibManager
                 && !TryLogCor(SetLogLoc()))//但最后还是导出失败了
             {
                 MessageBox.Show("导出失败，日志将直接清空。",
-                                    "提示",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Error);
+                                "提示",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
             }
             //清空日志
             TBLog.Clear();
@@ -384,9 +384,9 @@ namespace JDLibManager
             catch (Exception ex)
             {
                 MessageBox.Show($"词库备份出错: {ex.Message}",
-                                    "错误",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Error);
+                                "错误",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
                 return false;
             }
         }
@@ -426,9 +426,9 @@ namespace JDLibManager
             catch (Exception ex)
             {
                 MessageBox.Show($"日志导出出错: {ex.Message}",
-                                    "错误",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Error);
+                                "错误",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
                 return false;
             }
         }
@@ -438,9 +438,9 @@ namespace JDLibManager
             if (TBLog.Text.Length == 0)
             {
                 MessageBox.Show("还未记录到任何日志，无法导出。\r\n修改过程会产生日志，请在所有修改完成后导出日志。",
-                                    "提示",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Warning);
+                                "提示",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
                 return;
             }
             LogOut = TryLogCor(TBLogLoc.Text);
@@ -450,36 +450,36 @@ namespace JDLibManager
         private void ButHel_Click(object sender, RoutedEventArgs e)//显示帮助
         {
             MessageBox.Show("功能：\r\n"
-                                + "加词：在词库中添加一行。\r\n"
-                                + "删词：在词库中删除一行。\r\n"
-                                + "调频：将长码的词移至短码，短码的词移至剩下最短的空码上。\r\n"
-                                + "修改：修改词库中某一行的词或编码。\r\n"
-                                + "日志：记录所有的改动，以便查错和回溯。\r\n"
-                                + "\r\n注意：\r\n"
-                                + "1. 本工具自动编码和检查严格依照官方键道6编码规则。\r\n"
-                                + "2. 仅在启动时加载一次词组和单字，请勿同时另行编辑。\r\n"
-                                + "3. 词组载入后会按编码重排，可能破坏原有顺序。\r\n"
-                                + "4. 每次改动时会覆写词组文件，不会修改其他文件。\r\n"
-                                + "5. 调频功能和加词页自动编码仅支持由单字中的字组成的词。\r\n"
-                                + "6. 生僻字（双字节字符）可能出错。", "帮助", MessageBoxButton.OK);
+                            + "加词：在词库中添加一行。\r\n"
+                            + "删词：在词库中删除一行。\r\n"
+                            + "调频：将长码的词移至短码，短码的词移至剩下最短的空码上。\r\n"
+                            + "修改：修改词库中某一行的词或编码。\r\n"
+                            + "日志：记录所有的改动，以便查错和回溯。\r\n"
+                            + "\r\n注意：\r\n"
+                            + "1. 本工具自动编码和检查严格依照官方键道6编码规则。\r\n"
+                            + "2. 仅在启动时加载一次词组和单字，请勿同时另行编辑。\r\n"
+                            + "3. 词组载入后会按编码重排，可能破坏原有顺序。\r\n"
+                            + "4. 每次改动时会覆写词组文件，不会修改其他文件。\r\n"
+                            + "5. 调频功能和加词页自动编码仅支持由单字中的字组成的词。\r\n"
+                            + "6. 生僻字（双字节字符）可能出错。", "帮助", MessageBoxButton.OK);
         }
 
         private void ButBas_Click(object sender, RoutedEventArgs e)//获取群号
         {
             Clipboard.SetDataObject("865189947");
             MessageBox.Show("键道官方QQ群号已复制到剪贴板。",
-                                "提示",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Information);
+                            "提示",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information);
         }
 
         private void ButCod_Click(object sender, RoutedEventArgs e)//源码链接
         {
             Clipboard.SetDataObject("https://github.com/GarthTB/JDLibManager");
             MessageBox.Show("词器v2.1，一个用于维护Rime星空键道6输入法词库的Windows工具。\r\n已开源于Github，源码链接已复制到剪贴板。",
-                                "词器",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Information);
+                            "词器",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Information);
         }
 
         private void TabCon_SelectionChanged(object sender, SelectionChangedEventArgs e)//未备份即修改时提示
@@ -489,9 +489,9 @@ namespace JDLibManager
             if (TBLibLoc.Text.Length == 0)
             {
                 MessageBox.Show("尚未载入词库，无法修改。请先载入词库。",
-                                    "提示",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Warning);
+                                "提示",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
                 TabCon.SelectedIndex = 0;
                 return;
             }
