@@ -35,7 +35,7 @@ namespace JDLibManager
             DicWrd.Clear();
             DicDan.Clear();
             LstHed.Clear();
-            _ = MessageBox.Show("词库加载出错！请检查词库中有无异常的行，然后重新选择。",
+            MessageBox.Show("词库加载出错！请检查词库中有无异常的行，然后重新选择。",
                                 "错误",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
@@ -85,7 +85,7 @@ namespace JDLibManager
             }
             catch (Exception ex)
             {
-                _ = MessageBox.Show($"读取词组出错: {ex.Message}",
+                MessageBox.Show($"读取词组出错: {ex.Message}",
                                     "错误",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
@@ -146,7 +146,7 @@ namespace JDLibManager
             }
             catch (Exception ex)
             {
-                _ = MessageBox.Show($"读取单字出错: {ex.Message}",
+                MessageBox.Show($"读取单字出错: {ex.Message}",
                                     "错误",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
@@ -176,7 +176,7 @@ namespace JDLibManager
             DanLoc = Path.GetFullPath(@"..\xkjd6.danzi.dict.yaml");
             if (TryLoaLib())
             {
-                _ = MessageBox.Show($"已自动载入程序上级{MsgBoxLoaTip}",
+                MessageBox.Show($"已自动载入程序上级{MsgBoxLoaTip}",
                                     "提示",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Information);
@@ -189,7 +189,7 @@ namespace JDLibManager
             DanLoc = $@"C:\Users\{Environment.UserName}\AppData\Roaming\Rime\xkjd6.danzi.dict.yaml";
             if (TryLoaLib())
             {
-                _ = MessageBox.Show($"已自动载入Rime默认{MsgBoxLoaTip}",
+                MessageBox.Show($"已自动载入Rime默认{MsgBoxLoaTip}",
                                     "提示",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Information);
@@ -198,7 +198,7 @@ namespace JDLibManager
             }
 
             //都没有
-            _ = MessageBox.Show("未能自动载入Rime键道词库。\r\n建议将此程序放在词库的下级目录中，或手动选择词库位置。",
+            MessageBox.Show("未能自动载入Rime键道词库。\r\n建议将此程序放在词库的下级目录中，或手动选择词库位置。",
                                 "提示",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Warning);
@@ -226,7 +226,7 @@ namespace JDLibManager
                 DanLoc = LibLoc + @"\xkjd6.danzi.dict.yaml";
                 if (TryLoaLib())
                 {
-                    _ = MessageBox.Show($"已成功载入指定{MsgBoxLoaTip}",
+                    MessageBox.Show($"已成功载入指定{MsgBoxLoaTip}",
                                         "提示",
                                         MessageBoxButton.OK,
                                         MessageBoxImage.Information);
@@ -245,7 +245,7 @@ namespace JDLibManager
                                    MessageBoxImage.Question) == MessageBoxResult.No//如果选择了不要直接清空
                 && !TryLogCor(SetLogLoc()))//但最后还是导出失败了
             {
-                _ = MessageBox.Show("导出失败，日志将直接清空。",
+                MessageBox.Show("导出失败，日志将直接清空。",
                                     "提示",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
@@ -383,7 +383,7 @@ namespace JDLibManager
             }
             catch (Exception ex)
             {
-                _ = MessageBox.Show($"词库备份出错: {ex.Message}",
+                MessageBox.Show($"词库备份出错: {ex.Message}",
                                     "错误",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
@@ -425,7 +425,7 @@ namespace JDLibManager
             }
             catch (Exception ex)
             {
-                _ = MessageBox.Show($"日志导出出错: {ex.Message}",
+                MessageBox.Show($"日志导出出错: {ex.Message}",
                                     "错误",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Error);
@@ -437,7 +437,7 @@ namespace JDLibManager
         {
             if (TBLog.Text.Length == 0)
             {
-                _ = MessageBox.Show("还未记录到任何日志，无法导出。\r\n修改过程会产生日志，请在所有修改完成后导出日志。",
+                MessageBox.Show("还未记录到任何日志，无法导出。\r\n修改过程会产生日志，请在所有修改完成后导出日志。",
                                     "提示",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Warning);
@@ -449,7 +449,7 @@ namespace JDLibManager
 
         private void ButHel_Click(object sender, RoutedEventArgs e)//显示帮助
         {
-            _ = MessageBox.Show("功能：\r\n"
+            MessageBox.Show("功能：\r\n"
                                 + "加词：在词库中添加一行。\r\n"
                                 + "删词：在词库中删除一行。\r\n"
                                 + "调频：将长码的词移至短码，短码的词移至剩下最短的空码上。\r\n"
@@ -467,7 +467,7 @@ namespace JDLibManager
         private void ButBas_Click(object sender, RoutedEventArgs e)//获取群号
         {
             Clipboard.SetDataObject("865189947");
-            _ = MessageBox.Show("键道官方QQ群号已复制到剪贴板。",
+            MessageBox.Show("键道官方QQ群号已复制到剪贴板。",
                                 "提示",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
@@ -476,7 +476,7 @@ namespace JDLibManager
         private void ButCod_Click(object sender, RoutedEventArgs e)//源码链接
         {
             Clipboard.SetDataObject("https://github.com/GarthTB/JDLibManager");
-            _ = MessageBox.Show("词器v2.0，一个用于维护Rime星空键道6输入法词库的Windows工具。\r\n已开源于Github，源码链接已复制到剪贴板。",
+            MessageBox.Show("词器v2.0，一个用于维护Rime星空键道6输入法词库的Windows工具。\r\n已开源于Github，源码链接已复制到剪贴板。",
                                 "词器",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
@@ -488,7 +488,7 @@ namespace JDLibManager
                 return;
             if (TBLibLoc.Text.Length == 0)
             {
-                _ = MessageBox.Show("尚未载入词库，无法修改。请先载入词库。",
+                MessageBox.Show("尚未载入词库，无法修改。请先载入词库。",
                                     "提示",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Warning);

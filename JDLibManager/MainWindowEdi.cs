@@ -24,41 +24,35 @@ namespace JDLibManager
         private void ChkRskEdi()//检查风险
         {
             if (TBEdiWrdBef.Text.Length == 0 || CBEdiCodBef.Text.Length == 0)//如果没输入原有条目
-            {
                 return;
-            }
 
             if (SliEdiWrdCod.Value == 0)//如果要改码
             {
                 if (TBEdiCodAft.Text.Length == 0 || CBEdiCodBef.Text == TBEdiCodAft.Text)//没有目标或没有改动
-                {
                     return;
-                }
+
                 if (CBIgnEdi.IsChecked == false)//不忽略风险，则执行检查
                 {
                     WarEdiRYC.IsChecked = false;//冗余词与改码无关
                     WarEdiGDK.IsChecked = !FulShoCod(TBEdiCodAft.Text);//更短空码
                     WarEdiMWB.IsChecked = HavCod(TBEdiCodAft.Text);//码位被占
                     WarEdiGHL.IsChecked = HavLonCod(CBEdiCodBef.Text);//改后留空
-                    string ProWrd = TBEdiWrdBef.Text;
-                    if (CutWrd(ref ProWrd) && AllDan(ProWrd))//能自动编码
+                    if (IsValid(TBEdiWrdBef.Text, out string valchars) && AllDan(valchars))//能自动编码
                         WarEdiMBP.IsChecked = !WrdCodMch(TBEdiWrdBef.Text, TBEdiCodAft.Text);//码不配词
                 }
             }
             else//如果要改词
             {
                 if (TBEdiWrdAft.Text.Length == 0 || TBEdiWrdBef.Text == TBEdiWrdAft.Text)//没有目标或没有改动
-                {
                     return;
-                }
+
                 if (CBIgnEdi.IsChecked == false)//不忽略风险，则执行检查
                 {
                     WarEdiGDK.IsChecked = false;//更短空码与改词无关
                     WarEdiMWB.IsChecked = false;//码位被占与改词无关
                     WarEdiGHL.IsChecked = false;//改后留空与改词无关
                     WarEdiRYC.IsChecked = HavWrd(TBEdiWrdAft.Text);//冗余词
-                    string ProWrd = TBEdiWrdAft.Text;
-                    if (CutWrd(ref ProWrd) && AllDan(ProWrd))//能自动编码
+                    if (IsValid(TBEdiWrdAft.Text, out string valchars) && AllDan(valchars))//能自动编码
                         WarEdiMBP.IsChecked = !WrdCodMch(TBEdiWrdAft.Text, CBEdiCodBef.Text);//码不配词
                 }
             }
@@ -74,7 +68,7 @@ namespace JDLibManager
                 ButEdi.IsEnabled = false;
                 return;
             }
-            LoadCodToCBB(AllCodEdi, ref CBEdiCodBef);
+            CBBLoad(AllCodEdi, ref CBEdiCodBef);
         }
 
         private void TBEdiWrdBef_TextChanged(object sender, TextChangedEventArgs e)//输入原有的词
@@ -156,14 +150,8 @@ namespace JDLibManager
         private void ButEdi_Click(object sender, RoutedEventArgs e)//修改
         {
             //进行改词或改码
-            if (SliEdiWrdCod.Value == 0)
-            {
-                DicWrdEdiCod();
-            }
-            else
-            {
-                DicWrdEdiWrd();
-            }
+            if (SliEdiWrdCod.Value == 0) DicWrdEdiCod();
+            else DicWrdEdiWrd();
 
             //写入词库
             if (!TryWriWrd())//失败，则直接返回
@@ -176,7 +164,7 @@ namespace JDLibManager
             //补位提示
             if (WarEdiGHL.IsChecked == true)
             {
-                _ = MessageBox.Show("修改后原有的码会变成空位，请到修改页面补位。",
+                MessageBox.Show("修改后原有的码会变成空位，请到修改页面补位。",
                                     "提示",
                                     MessageBoxButton.OK,
                                     MessageBoxImage.Information);

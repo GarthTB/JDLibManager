@@ -31,7 +31,7 @@ namespace JDLibManager
                 ButDel.IsEnabled = false;
                 return;
             }
-            LoadCodToCBB(AllCodDel, ref CBDelCod);
+            CBBLoad(AllCodDel, ref CBDelCod);
         }
 
         private void TBDelWrd_TextChanged(object sender, TextChangedEventArgs e)//输入待删的词
@@ -79,14 +79,14 @@ namespace JDLibManager
             //补位提示
             if (WarDelSHL.IsChecked == true)
             {
-                _ = MessageBox.Show("该码删除后会变成空位，请到修改页面补位。",
-                                    "提示",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Information);
+                MessageBox.Show("该码删除后会变成空位，请到修改页面补位。",
+                                "提示",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
             }
 
             //在现有列表中删掉选中的码
-            _ = AllCodDel.Remove(CBDelCod.Text);
+            AllCodDel.Remove(CBDelCod.Text);
             CBDelCod.Text = string.Empty;
 
             //防止再次删除

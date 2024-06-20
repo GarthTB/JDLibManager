@@ -30,8 +30,7 @@ namespace JDLibManager
             }
             WarExcWCT.IsChecked = false;
 
-            string ProWrd = TBExcWrdSho.Text;
-            if (!(CutWrd(ref ProWrd) && AllDan(ProWrd)))//如果不能自动编码，则返回
+            if (!(IsValid(TBExcWrdSho.Text, out string valchars) && AllDan(valchars)))//如果不能自动编码，则返回
             {
                 WarExcGZB.IsChecked = true;
                 return;
@@ -66,7 +65,7 @@ namespace JDLibManager
                 ButExc.IsEnabled = false;
                 return;
             }
-            LoadCodToCBB(AllCodSho, ref CBExcCodSho);
+            CBBLoad(AllCodSho, ref CBExcCodSho);
         }
 
         private void ReloadCodExcLon()//往复选框中填放长码
@@ -77,7 +76,7 @@ namespace JDLibManager
                 ButExc.IsEnabled = false;
                 return;
             }
-            LoadCodToCBB(AllCodLon, ref CBExcCodLon);
+            CBBLoad(AllCodLon, ref CBExcCodLon);
         }
 
         private void TBExcWrdSho_TextChanged(object sender, TextChangedEventArgs e)//输入短码的词
@@ -163,10 +162,10 @@ namespace JDLibManager
             //补位提示
             if (WarExcTHL.IsChecked == true)
             {
-                _ = MessageBox.Show("调换后原本的长码会变成空位，请到修改页面补位。",
-                                    "提示",
-                                    MessageBoxButton.OK,
-                                    MessageBoxImage.Information);
+                MessageBox.Show("调换后原本的长码会变成空位，请到修改页面补位。",
+                                "提示",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
             }
 
             //清除两个复选框

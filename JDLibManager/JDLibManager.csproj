@@ -7,20 +7,11 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <DebugType>none</DebugType>
+    <Title>键道词库管理器</Title>
     <ApplicationIcon>JD.ico</ApplicationIcon>
+    <Version>2.1.0</Version>
     <Authors>Garth</Authors>
-    <PackageIcon>JD.png</PackageIcon>
-    <FileVersion>2.0.2.0</FileVersion>
-    <Version>2.0.2</Version>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DebugType>portable</DebugType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <Copyright>©️ 2024 Garth</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,13 +20,6 @@
 
   <ItemGroup>
     <Resource Include="JD.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="JD.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>
