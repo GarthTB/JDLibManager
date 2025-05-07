@@ -1,5 +1,7 @@
 # 词器
 
+## 20250507 此项目不再维护。程序的主要功能已迁移至 [RimeLibrarian](https://github.com/GarthTB/RimeLibrarian) 。
+
 一个用于维护Rime星空键道6输入法词库的Windows工具。
 
 此工具依赖[.net 6.0运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0)。
